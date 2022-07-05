@@ -3,25 +3,41 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.3.0",
-    "@testing-library/user-event": "^13.5.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "axios": "0.27.2",
+    "immer": "9.0.15",
+    "libsodium-wrappers": "0.7.10",
+    "qrcode.react": "3.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-router-dom": "6.3.0",
+    "zustand": "4.0.0-rc.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "5.16.4",
+    "@testing-library/react": "13.3.0",
+    "@testing-library/user-event": "13.5.0",
+    "eslint": "8.18.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-react": "7.30.1",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "patch-package": "6.4.7",
+    "path": "0.12.7",
+    "prettier": "2.7.1",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "ESLINT_NO_DEV_ERRORS=true react-scripts start",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "testtest": "source .env && echo $REACT_APP_API_URL",
+    "prettier": "prettier --check \"./src/**/*.{js,jsx}\"",
+    "lint": "eslint src/**/*.js src/**/*.js",
+    "build": "npm run lint && npm run prettier && GENERATE_SOURCEMAP=false react-scripts build",
+    "postbuild": "find ./build -name '*.map' -delete && find ./build -name '.DS_Store' -delete",
+    "upload": "source .env && aws s3 sync build $S3_URL --delete --cache-control max-age=31536000,public",
+    "postupload": "source .env && aws s3 cp $S3_URL/index.html $S3_URL/index.html --metadata-directive REPLACE --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html --acl public-read",
+    "invalidate": "source .env && aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths \"/index.html\"",
+    "deploy": "npm run build && npm run upload && npm run invalidate"
   },
   "browserslist": {
     "production": [
